@@ -1,0 +1,137 @@
+/* Admin app — shares the same design tokens as the public site */
+@import url("../css/styles.css");
+
+body { background: var(--navy-950); }
+
+.admin-shell { display: flex; min-height: 100vh; }
+
+.admin-sidebar {
+  width: 240px;
+  flex: 0 0 240px;
+  background: var(--navy-900);
+  color: #fff;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+}
+.admin-sidebar .brand { color: #fff; margin-bottom: 36px; }
+.admin-sidebar img { height: 34px; }
+.admin-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.admin-nav button {
+  text-align: left;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.72);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  padding: 11px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.admin-nav button:hover { background: rgba(255,255,255,0.06); color: #fff; }
+.admin-nav button.is-active { background: var(--orange-500); color: #fff; }
+.admin-signout {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.75);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+.admin-signout:hover { border-color: #fff; color: #fff; }
+
+.admin-main {
+  flex: 1;
+  background: var(--cream-100);
+  padding: 40px 44px;
+  overflow-y: auto;
+}
+.admin-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; }
+.admin-header p { margin: 0; }
+
+.panel { display: none; }
+.panel.is-active { display: block; }
+
+.upload-zone {
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius-md);
+  padding: 36px;
+  text-align: center;
+  background: var(--cream-050);
+  margin-bottom: 28px;
+}
+.upload-zone p { margin: 0 0 14px; }
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+}
+.image-card {
+  background: var(--cream-050);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.image-card .thumb {
+  height: 140px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--navy-900);
+}
+.image-card .meta { padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.image-card .meta small { color: var(--ink-400); }
+.image-card .icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--orange-600);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.table-wrap { background: var(--cream-050); border: 1px solid var(--line); border-radius: var(--radius-md); overflow: hidden; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 14px 18px; font-size: 0.9rem; border-bottom: 1px solid var(--line); }
+th { color: var(--ink-400); font-weight: 600; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.06em; }
+tr:last-child td { border-bottom: none; }
+.badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+.badge-unread { background: var(--orange-100); color: var(--orange-700); }
+.badge-read { background: var(--navy-100); color: var(--navy-700); }
+
+.login-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--navy-950);
+  padding: 24px;
+}
+.login-card {
+  background: var(--cream-050);
+  border-radius: var(--radius-md);
+  padding: 44px 40px;
+  width: 100%;
+  max-width: 380px;
+}
+.login-card .brand-mark { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+.login-card .brand-mark img { height: 36px; }
+.login-error {
+  background: var(--orange-100);
+  color: var(--orange-700);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  margin-top: 14px;
+  display: none;
+}
+.login-error.is-visible { display: block; }
+
+@media (max-width: 820px) {
+  .admin-shell { flex-direction: column; }
+  .admin-sidebar { width: 100%; flex-direction: row; align-items: center; padding: 16px 20px; }
+  .admin-sidebar .brand { margin-bottom: 0; }
+  .admin-nav { flex-direction: row; }
+  .admin-main { padding: 24px; }
+}

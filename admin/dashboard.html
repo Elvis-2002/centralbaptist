@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard — Central Baptist Church Wakiso Admin</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+<div class="admin-shell">
+
+  <aside class="admin-sidebar">
+    <a class="brand" href="dashboard.html">
+      <img src="../assets/logo-source.png" alt="Church crest" />
+      <span class="brand-text">CBC Wakiso<br><small>Admin</small></span>
+    </a>
+    <nav class="admin-nav">
+      <button data-panel="images" class="is-active">Home Page Images</button>
+      <button data-panel="leaders">Leadership</button>
+      <button data-panel="activities">Activities</button>
+      <button data-panel="messages">Messages</button>
+      <button data-panel="settings">Site Settings</button>
+    </nav>
+    <button class="admin-signout" id="signOutBtn">Sign Out</button>
+  </aside>
+
+  <main class="admin-main">
+
+    <section class="panel is-active" id="panel-images">
+      <div class="admin-header">
+        <div>
+          <h1>Home Page Images</h1>
+          <p>These photos rotate automatically in the hero section of the homepage. Recommended size: 1600×1000px or larger, landscape orientation.</p>
+        </div>
+      </div>
+
+      <div class="upload-zone">
+        <p>Upload a new photo for the homepage carousel.</p>
+        <button class="btn btn-primary" id="uploadBtn">Upload Image</button>
+      </div>
+
+      <div class="image-grid" id="imageGrid">
+        <p style="color:var(--ink-400);">Loading images…</p>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-leaders">
+      <div class="admin-header">
+        <div>
+          <h1>Leadership</h1>
+          <p>Add pastors and deacons in the order they should be ranked on the About page. Rank 1 is the most senior (e.g. Senior Pastor).</p>
+        </div>
+      </div>
+
+      <div class="upload-zone">
+        <div class="field" style="margin-bottom:12px; text-align:left;">
+          <label for="leaderName">Full name</label>
+          <input type="text" id="leaderName" placeholder="e.g. Pastor John Mukasa" />
+        </div>
+        <div class="form-row" style="margin-bottom:12px;">
+          <div class="field" style="text-align:left;">
+            <label for="leaderRole">Title / role</label>
+            <input type="text" id="leaderRole" placeholder="e.g. Senior Pastor" />
+          </div>
+          <div class="field" style="text-align:left;">
+            <label for="leaderRank">Rank (1 = most senior)</label>
+            <input type="number" id="leaderRank" min="1" placeholder="1" />
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:16px; text-align:left;">
+          <label for="leaderBio">Short bio (optional)</label>
+          <textarea id="leaderBio" rows="2"></textarea>
+        </div>
+        <button class="btn btn-primary" id="leaderPhotoBtn" type="button">Add Photo (optional) &amp; Save</button>
+        <button class="btn btn-navy" id="leaderSaveNoPhotoBtn" type="button" style="margin-left:10px;">Save Without Photo</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Rank</th><th>Name</th><th>Role</th><th></th></tr></thead>
+          <tbody id="leadersBody">
+            <tr><td colspan="4" style="color:var(--ink-400);">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-activities">
+      <div class="admin-header">
+        <div>
+          <h1>Church Activities</h1>
+          <p>Short posts about church programs and events, shown newest-first on the Activities page.</p>
+        </div>
+      </div>
+
+      <div class="upload-zone">
+        <div class="form-row" style="margin-bottom:12px;">
+          <div class="field" style="text-align:left;">
+            <label for="activityTitle">Title</label>
+            <input type="text" id="activityTitle" placeholder="e.g. Youth Sunday Outreach" />
+          </div>
+          <div class="field" style="text-align:left;">
+            <label for="activityDate">Date (as shown on the site)</label>
+            <input type="text" id="activityDate" placeholder="e.g. August 2026" />
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:16px; text-align:left;">
+          <label for="activityDescription">Description</label>
+          <textarea id="activityDescription" rows="3"></textarea>
+        </div>
+        <button class="btn btn-primary" id="activityPhotoBtn" type="button">Add Photo (optional) &amp; Post</button>
+        <button class="btn btn-navy" id="activitySaveNoPhotoBtn" type="button" style="margin-left:10px;">Post Without Photo</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Title</th><th>Date</th><th></th></tr></thead>
+          <tbody id="activitiesBody">
+            <tr><td colspan="3" style="color:var(--ink-400);">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-messages">
+      <div class="admin-header">
+        <div>
+          <h1>Messages</h1>
+          <p>Submissions from the contact form on the public site.</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>From</th><th>Subject</th><th>Received</th><th>Status</th></tr>
+          </thead>
+          <tbody id="messagesBody">
+            <tr><td colspan="4" style="color:var(--ink-400);">Loading messages…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-settings">
+      <div class="admin-header">
+        <div>
+          <h1>Site Settings</h1>
+          <p>Contact details shown on the public site. Editing this list updates Firestore document <code>settings/contact</code>, which the site can be wired to read from directly.</p>
+        </div>
+      </div>
+      <div class="table-wrap" style="padding:24px;">
+        <div class="field" style="margin-bottom:16px;">
+          <label for="settingPhone">Phone number</label>
+          <input type="text" id="settingPhone" />
+        </div>
+        <div class="field" style="margin-bottom:16px;">
+          <label for="settingEmail">Email address</label>
+          <input type="email" id="settingEmail" />
+        </div>
+        <div class="field" style="margin-bottom:20px;">
+          <label for="settingAddress">Address</label>
+          <input type="text" id="settingAddress" />
+        </div>
+        <button class="btn btn-navy" id="saveSettingsBtn">Save Settings</button>
+        <p class="form-note" id="settingsStatus"></p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-config.js"></script>
+<script src="https://upload-widget.cloudinary.com/latest/global/all.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
