@@ -21,6 +21,21 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://centralbaptistchurchwakiso.org/programs.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://centralbaptistchurchwakiso.org/gallery.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://centralbaptistchurchwakiso.org/daughter-churches.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://centralbaptistchurchwakiso.org/get-involved.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

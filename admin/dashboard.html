@@ -19,7 +19,10 @@
     </a>
     <nav class="admin-nav">
       <button data-panel="images" class="is-active">Home Page Images</button>
+      <button data-panel="gallery">Gallery</button>
       <button data-panel="leaders">Leadership</button>
+      <button data-panel="churches">Daughter Churches</button>
+      <button data-panel="programs">Programs</button>
       <button data-panel="activities">Activities</button>
       <button data-panel="messages">Messages</button>
       <button data-panel="settings">Site Settings</button>
@@ -44,6 +47,105 @@
 
       <div class="image-grid" id="imageGrid">
         <p style="color:var(--ink-400);">Loading images…</p>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-gallery">
+      <div class="admin-header">
+        <div>
+          <h1>Photo Gallery</h1>
+          <p>General church photos shown in a grid on the Gallery page. Add a short caption if you'd like one to appear on the photo.</p>
+        </div>
+      </div>
+
+      <div class="upload-zone">
+        <div class="field" style="margin-bottom:16px; text-align:left;">
+          <label for="galleryCaption">Caption (optional)</label>
+          <input type="text" id="galleryCaption" placeholder="e.g. Youth choir, Easter service" />
+        </div>
+        <button class="btn btn-primary" id="galleryPhotoBtn" type="button">Upload Photo</button>
+      </div>
+
+      <div class="image-grid" id="galleryAdminGrid">
+        <p style="color:var(--ink-400);">Loading photos…</p>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-churches">
+      <div class="admin-header">
+        <div>
+          <h1>Daughter Churches</h1>
+          <p>Congregations established by Central Baptist Church Wakiso, shown on the Daughter Churches page.</p>
+        </div>
+      </div>
+
+      <div class="upload-zone">
+        <div class="form-row" style="margin-bottom:12px;">
+          <div class="field" style="text-align:left;">
+            <label for="churchName">Church name</label>
+            <input type="text" id="churchName" placeholder="e.g. Central Baptist Church Kayunga" />
+          </div>
+          <div class="field" style="text-align:left;">
+            <label for="churchLocation">Location</label>
+            <input type="text" id="churchLocation" placeholder="e.g. Kayunga, Uganda" />
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:12px; text-align:left;">
+          <label for="churchOrder">Display order (1 = first)</label>
+          <input type="number" id="churchOrder" min="1" placeholder="1" />
+        </div>
+        <div class="field" style="margin-bottom:16px; text-align:left;">
+          <label for="churchDescription">Short description</label>
+          <textarea id="churchDescription" rows="3"></textarea>
+        </div>
+        <button class="btn btn-primary" id="churchPhotoBtn" type="button">Add Photo (optional) &amp; Save</button>
+        <button class="btn btn-navy" id="churchSaveNoPhotoBtn" type="button" style="margin-left:10px;">Save Without Photo</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Location</th><th></th></tr></thead>
+          <tbody id="churchesBody">
+            <tr><td colspan="3" style="color:var(--ink-400);">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-programs">
+      <div class="admin-header">
+        <div>
+          <h1>Programs</h1>
+          <p>Ongoing church programs shown on the Programs page, each with a photo and description.</p>
+        </div>
+      </div>
+
+      <div class="upload-zone">
+        <div class="form-row" style="margin-bottom:12px;">
+          <div class="field" style="text-align:left;">
+            <label for="programTitle">Program title</label>
+            <input type="text" id="programTitle" placeholder="e.g. Prison Fellowship" />
+          </div>
+          <div class="field" style="text-align:left;">
+            <label for="programOrder">Display order (1 = first)</label>
+            <input type="number" id="programOrder" min="1" placeholder="1" />
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:16px; text-align:left;">
+          <label for="programDescription">Description</label>
+          <textarea id="programDescription" rows="3"></textarea>
+        </div>
+        <button class="btn btn-primary" id="programPhotoBtn" type="button">Add Photo (optional) &amp; Save</button>
+        <button class="btn btn-navy" id="programSaveNoPhotoBtn" type="button" style="margin-left:10px;">Save Without Photo</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Title</th><th></th></tr></thead>
+          <tbody id="programsBody">
+            <tr><td colspan="2" style="color:var(--ink-400);">Loading…</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 

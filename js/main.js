@@ -186,3 +186,121 @@ async function loadActivities() {
 }
 
 document.addEventListener("DOMContentLoaded", loadActivities);
+
+// ---------------------------------------------------------------
+// Photo gallery (Gallery page).
+// Reads Firestore collection "gallery", each doc shaped as:
+// { url, caption, order }
+// ---------------------------------------------------------------
+async function loadGallery() {
+  const grid = document.getElementById("galleryGrid");
+  if (!grid) return;
+
+  try {
+    if (typeof db === "undefined") return;
+    const snap = await db.collection("gallery").orderBy("order").get();
+
+    if (snap.empty) {
+      grid.innerHTML = '<p style="color:var(--ink-400);">No photos posted yet — check back soon.</p>';
+      return;
+    }
+
+    grid.innerHTML = "";
+    snap.forEach((doc) => {
+      const g = doc.data();
+      const item = document.createElement("div");
+      item.className = "gallery-item";
+      if (g.url) item.style.backgroundImage = `url('${g.url}')`;
+      if (g.caption) {
+        item.innerHTML = `<span class="gallery-caption">${g.caption}</span>`;
+      }
+      grid.appendChild(item);
+    });
+  } catch (err) {
+    console.warn("Could not load the gallery from Firestore.", err);
+    grid.innerHTML = '<p style="color:var(--ink-400);">Gallery could not be loaded right now.</p>';
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadGallery);
+
+// ---------------------------------------------------------------
+// Church programs (Programs page).
+// Reads Firestore collection "programs", each doc shaped as:
+// { title, description, photoUrl, order }
+// ---------------------------------------------------------------
+async function loadPrograms() {
+  const list = document.getElementById("programList");
+  if (!list) return;
+
+  try {
+    if (typeof db === "undefined") return;
+    const snap = await db.collection("programs").orderBy("order").get();
+
+    if (snap.empty) {
+      list.innerHTML = '<p style="color:var(--ink-400);">No programs posted yet — check back soon.</p>';
+      return;
+    }
+
+    list.innerHTML = "";
+    snap.forEach((doc) => {
+      const p = doc.data();
+      const card = document.createElement("article");
+      card.className = "activity-card";
+      card.innerHTML = `
+        <div class="activity-thumb" ${p.photoUrl ? `style="background-image:url('${p.photoUrl}')"` : ""}></div>
+        <div class="activity-body">
+          <h3>${p.title || ""}</h3>
+          <p>${p.description || ""}</p>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  } catch (err) {
+    console.warn("Could not load programs from Firestore.", err);
+    list.innerHTML = '<p style="color:var(--ink-400);">Programs could not be loaded right now.</p>';
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadPrograms);
+
+// ---------------------------------------------------------------
+// Daughter churches (Daughter Churches page).
+// Reads Firestore collection "daughterChurches", each doc shaped as:
+// { name, location, description, photoUrl, order }
+// ---------------------------------------------------------------
+async function loadDaughterChurches() {
+  const list = document.getElementById("daughterChurchList");
+  if (!list) return;
+
+  try {
+    if (typeof db === "undefined") return;
+    const snap = await db.collection("daughterChurches").orderBy("order").get();
+
+    if (snap.empty) {
+      list.innerHTML = '<p style="color:var(--ink-400);">No daughter churches listed yet.</p>';
+      return;
+    }
+
+    list.innerHTML = "";
+    snap.forEach((doc) => {
+      const c = doc.data();
+      const card = document.createElement("article");
+      card.className = "activity-card";
+      card.innerHTML = `
+        <div class="activity-thumb" ${c.photoUrl ? `style="background-image:url('${c.photoUrl}')"` : ""}></div>
+        <div class="activity-body">
+          <span class="activity-date">${c.location || ""}</span>
+          <h3>${c.name || ""}</h3>
+          <p>${c.description || ""}</p>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  } catch (err) {
+    console.warn("Could not load daughter churches from Firestore.", err);
+    list.innerHTML = '<p style="color:var(--ink-400);">Daughter churches could not be loaded right now.</p>';
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadDaughterChurches);

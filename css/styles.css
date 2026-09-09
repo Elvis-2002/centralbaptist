@@ -588,6 +588,34 @@ form.contact-form { display: grid; gap: 16px; }
 .social-row a:hover { border-color: var(--orange-500); color: var(--orange-500); }
 .social-row svg { width: 17px; height: 17px; }
 
+/* Photo gallery */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+@media (max-width: 880px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .gallery-grid { grid-template-columns: 1fr; } }
+.gallery-item {
+  position: relative;
+  aspect-ratio: 4/3;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--navy-800), var(--navy-950));
+  background-size: cover;
+  background-position: center;
+}
+.gallery-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 14px 16px;
+  background: linear-gradient(180deg, transparent, rgba(6,15,36,0.85));
+  color: #fff;
+  font-size: 0.85rem;
+}
+
 /* Footer */
 .site-footer { background: var(--navy-950); color: rgba(255,255,255,0.65); padding: 64px 0 28px; }
 .footer-grid {

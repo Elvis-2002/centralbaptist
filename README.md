@@ -80,6 +80,21 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
+    match /gallery/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    match /programs/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    match /daughterChurches/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
     match /messages/{docId} {
       allow create: if true;
       allow read, update, delete: if request.auth != null;
@@ -98,6 +113,9 @@ service cloud.firestore {
 | `homeImages`           | Homepage carousel photos (`url`, `alt`, `order`)             |
 | `leaders`               | Pastors and deacons, ranked by `order` (About page)          |
 | `activities`            | Short church activity/news posts (Activities page)           |
+| `gallery`                | Photo gallery images, ranked by `order` (Gallery page)        |
+| `programs`               | Ongoing programs with photo + description (Programs page)     |
+| `daughterChurches`        | Daughter churches, ranked by `order` (Daughter Churches page) |
 | `messages`               | Contact form submissions                                    |
 | `settings/contact`       | Phone, email, address shown on the site                     |
 

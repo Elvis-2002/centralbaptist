@@ -117,6 +117,209 @@ document.getElementById("uploadBtn").addEventListener("click", () => {
 });
 
 // ---------------------------------------------------------------
+// Photo gallery (collection: gallery)
+// Each doc: { url, caption, order, createdAt }
+// ---------------------------------------------------------------
+const galleryAdminGrid = document.getElementById("galleryAdminGrid");
+
+async function renderGalleryAdmin() {
+  const snap = await db.collection("gallery").orderBy("order").get();
+  if (snap.empty) {
+    galleryAdminGrid.innerHTML = '<p style="color:var(--ink-400);">No photos yet — upload the first one above.</p>';
+    return;
+  }
+  galleryAdminGrid.innerHTML = "";
+  snap.forEach((doc) => {
+    const g = doc.data();
+    const card = document.createElement("div");
+    card.className = "image-card";
+    card.innerHTML = `
+      <div class="thumb" style="background-image:url('${g.url}')"></div>
+      <div class="meta">
+        <small>${g.caption || "No caption"}</small>
+        <button class="icon-btn" data-id="${doc.id}">Remove</button>
+      </div>
+    `;
+    card.querySelector(".icon-btn").addEventListener("click", async () => {
+      if (confirm("Remove this photo from the gallery?")) {
+        await db.collection("gallery").doc(doc.id).delete();
+        renderGalleryAdmin();
+      }
+    });
+    galleryAdminGrid.appendChild(card);
+  });
+}
+
+const galleryPhotoWidget = createWidget(4 / 3, async (url) => {
+  const caption = document.getElementById("galleryCaption").value.trim();
+  const snap = await db.collection("gallery").orderBy("order", "desc").limit(1).get();
+  const nextOrder = snap.empty ? 1 : (snap.docs[0].data().order || 0) + 1;
+  await db.collection("gallery").add({
+    url: optimizeCloudinaryUrl(url, 1200),
+    caption,
+    order: nextOrder,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+  document.getElementById("galleryCaption").value = "";
+  renderGalleryAdmin();
+});
+
+document.getElementById("galleryPhotoBtn").addEventListener("click", () => {
+  if (galleryPhotoWidget) {
+    galleryPhotoWidget.open();
+  } else {
+    alert("Add your Cloudinary cloud name and unsigned upload preset in js/firebase-config.js first.");
+  }
+});
+
+// ---------------------------------------------------------------
+// Daughter churches (collection: daughterChurches)
+// Each doc: { name, location, description, order, photoUrl, createdAt }
+// ---------------------------------------------------------------
+const churchesBody = document.getElementById("churchesBody");
+
+async function renderChurches() {
+  const snap = await db.collection("daughterChurches").orderBy("order").get();
+  if (snap.empty) {
+    churchesBody.innerHTML = '<tr><td colspan="3" style="color:var(--ink-400);">No daughter churches added yet.</td></tr>';
+    return;
+  }
+  churchesBody.innerHTML = "";
+  snap.forEach((doc) => {
+    const c = doc.data();
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${c.name || ""}</td>
+      <td>${c.location || ""}</td>
+      <td><button class="icon-btn" data-id="${doc.id}">Remove</button></td>
+    `;
+    row.querySelector(".icon-btn").addEventListener("click", async () => {
+      if (confirm(`Remove ${c.name}?`)) {
+        await db.collection("daughterChurches").doc(doc.id).delete();
+        renderChurches();
+      }
+    });
+    churchesBody.appendChild(row);
+  });
+}
+
+function readChurchForm() {
+  const name = document.getElementById("churchName").value.trim();
+  const location = document.getElementById("churchLocation").value.trim();
+  const order = parseInt(document.getElementById("churchOrder").value, 10);
+  const description = document.getElementById("churchDescription").value.trim();
+  if (!name || !order) {
+    alert("Please fill in at least the church name and display order before saving.");
+    return null;
+  }
+  return { name, location, order, description };
+}
+
+function clearChurchForm() {
+  document.getElementById("churchName").value = "";
+  document.getElementById("churchLocation").value = "";
+  document.getElementById("churchOrder").value = "";
+  document.getElementById("churchDescription").value = "";
+}
+
+async function saveChurch(photoUrl) {
+  const fields = readChurchForm();
+  if (!fields) return;
+  await db.collection("daughterChurches").add({
+    ...fields,
+    photoUrl: photoUrl ? optimizeCloudinaryUrl(photoUrl, 1200) : null,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+  clearChurchForm();
+  renderChurches();
+}
+
+const churchPhotoWidget = createWidget(16 / 9, (url) => saveChurch(url));
+
+document.getElementById("churchPhotoBtn").addEventListener("click", () => {
+  if (!readChurchForm()) return;
+  if (churchPhotoWidget) {
+    churchPhotoWidget.open();
+  } else {
+    alert("Add your Cloudinary cloud name and unsigned upload preset in js/firebase-config.js first, or use 'Save Without Photo'.");
+  }
+});
+
+document.getElementById("churchSaveNoPhotoBtn").addEventListener("click", () => saveChurch(null));
+
+// ---------------------------------------------------------------
+// Programs (collection: programs)
+// Each doc: { title, description, order, photoUrl, createdAt }
+// ---------------------------------------------------------------
+const programsBody = document.getElementById("programsBody");
+
+async function renderPrograms() {
+  const snap = await db.collection("programs").orderBy("order").get();
+  if (snap.empty) {
+    programsBody.innerHTML = '<tr><td colspan="2" style="color:var(--ink-400);">No programs added yet.</td></tr>';
+    return;
+  }
+  programsBody.innerHTML = "";
+  snap.forEach((doc) => {
+    const p = doc.data();
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${p.title || ""}</td>
+      <td><button class="icon-btn" data-id="${doc.id}">Remove</button></td>
+    `;
+    row.querySelector(".icon-btn").addEventListener("click", async () => {
+      if (confirm(`Remove "${p.title}"?`)) {
+        await db.collection("programs").doc(doc.id).delete();
+        renderPrograms();
+      }
+    });
+    programsBody.appendChild(row);
+  });
+}
+
+function readProgramForm() {
+  const title = document.getElementById("programTitle").value.trim();
+  const order = parseInt(document.getElementById("programOrder").value, 10);
+  const description = document.getElementById("programDescription").value.trim();
+  if (!title || !order || !description) {
+    alert("Please fill in title, display order and description before saving.");
+    return null;
+  }
+  return { title, order, description };
+}
+
+function clearProgramForm() {
+  document.getElementById("programTitle").value = "";
+  document.getElementById("programOrder").value = "";
+  document.getElementById("programDescription").value = "";
+}
+
+async function saveProgram(photoUrl) {
+  const fields = readProgramForm();
+  if (!fields) return;
+  await db.collection("programs").add({
+    ...fields,
+    photoUrl: photoUrl ? optimizeCloudinaryUrl(photoUrl, 1200) : null,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  });
+  clearProgramForm();
+  renderPrograms();
+}
+
+const programPhotoWidget = createWidget(16 / 9, (url) => saveProgram(url));
+
+document.getElementById("programPhotoBtn").addEventListener("click", () => {
+  if (!readProgramForm()) return;
+  if (programPhotoWidget) {
+    programPhotoWidget.open();
+  } else {
+    alert("Add your Cloudinary cloud name and unsigned upload preset in js/firebase-config.js first, or use 'Save Without Photo'.");
+  }
+});
+
+document.getElementById("programSaveNoPhotoBtn").addEventListener("click", () => saveProgram(null));
+
+// ---------------------------------------------------------------
 // Leadership (collection: leaders)
 // Each doc: { name, role, order, bio, photoUrl, createdAt }
 // ---------------------------------------------------------------
@@ -325,6 +528,9 @@ document.getElementById("saveSettingsBtn").addEventListener("click", async () =>
 
 // --- Init -------------------------------------------------------
 renderImages();
+renderGalleryAdmin();
+renderChurches();
+renderPrograms();
 renderLeaders();
 renderActivities();
 renderMessages();
