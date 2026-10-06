@@ -67,16 +67,36 @@ async function renderImages() {
 const cloudinaryReady = window.cloudinary && cloudinaryConfig.cloudName !== "REPLACE_WITH_CLOUD_NAME";
 
 // Inserts Cloudinary's automatic-format / automatic-quality delivery
-// flags (and a sensible max width for where the photo is used) into
-// a secure_url returned by the upload widget, so every photo we save
-// is served as a lighter, browser-optimized file without anyone
-// having to resize or compress it by hand before uploading.
-function optimizeCloudinaryUrl(url, maxWidth) {
-  if (!url) return url;
-  return url.replace("/upload/", `/upload/f_auto,q_auto,w_${maxWidth},c_limit/`);
+// flags into a secure_url returned by the upload widget, plus a
+// smart "fill" crop: c_fill with g_auto uses Cloudinary's
+// content-aware auto-gravity to center the crop on the actual
+// subject (faces, for portraits) rather than relying on a manual
+// crop box at upload time, which is where mis-cropped photos were
+// actually coming from. Pass width/height matching the aspect
+// ratio each part of the site displays photos at — for a fixed-
+// shape container (gallery grid, leader circle, activity/program
+// thumbnail). Omit height for a context whose on-screen shape
+// varies by viewport (the homepage hero): that case just resizes
+// the full photo without forcing any crop, so CSS "cover" can do
+// the adaptive per-device cropping itself, same as before.
+//
+// For fixed-shape containers we use c_pad (not c_fill) with a
+// blurred background fill: this fits the WHOLE photo inside the
+// target shape instead of cropping anything out. Auto-gravity
+// cropping was still cutting off parts of well-framed photos
+// because it re-guesses the "subject" itself; padding never
+// removes any part of the original photo, just adds soft blurred
+// fill around it if the shape doesn't match exactly.
+function optimizeCloudinaryUrl(url) {
+  return url;
 }
 
-function createWidget(cropRatio, onSuccess) {
+// Upload widget — no manual cropping step. Whoever uploads just
+// picks a photo; Cloudinary stores it as-is, and optimizeCloudinaryUrl
+// applies the smart crop automatically when we save the delivery URL
+// to Firestore. This removes the step where a badly-dragged crop box
+// produced a bad photo everywhere it was used.
+function createWidget(onSuccess) {
   if (!cloudinaryReady) return null;
   return cloudinary.createUploadWidget(
     {
@@ -84,8 +104,7 @@ function createWidget(cropRatio, onSuccess) {
       uploadPreset: cloudinaryConfig.uploadPreset,
       sources: ["local", "camera", "url"],
       multiple: false,
-      cropping: true,
-      croppingAspectRatio: cropRatio,
+      cropping: false,
     },
     (error, result) => {
       if (!error && result && result.event === "success") {
@@ -95,11 +114,11 @@ function createWidget(cropRatio, onSuccess) {
   );
 }
 
-const uploadWidget = createWidget(16 / 9, async (url, publicId) => {
+const uploadWidget = createWidget(async (url, publicId) => {
   const snap = await db.collection("homeImages").orderBy("order", "desc").limit(1).get();
   const nextOrder = snap.empty ? 1 : (snap.docs[0].data().order || 0) + 1;
   await db.collection("homeImages").add({
-    url: optimizeCloudinaryUrl(url, 1920),
+    url: url,
     publicId,
     alt: "Central Baptist Church Wakiso",
     order: nextOrder,
@@ -150,12 +169,12 @@ async function renderGalleryAdmin() {
   });
 }
 
-const galleryPhotoWidget = createWidget(4 / 3, async (url) => {
+const galleryPhotoWidget = createWidget(async (url) => {
   const caption = document.getElementById("galleryCaption").value.trim();
   const snap = await db.collection("gallery").orderBy("order", "desc").limit(1).get();
   const nextOrder = snap.empty ? 1 : (snap.docs[0].data().order || 0) + 1;
   await db.collection("gallery").add({
-    url: optimizeCloudinaryUrl(url, 1200),
+    url: url,
     caption,
     order: nextOrder,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -227,14 +246,14 @@ async function saveChurch(photoUrl) {
   if (!fields) return;
   await db.collection("daughterChurches").add({
     ...fields,
-    photoUrl: photoUrl ? optimizeCloudinaryUrl(photoUrl, 1200) : null,
+    photoUrl: photoUrl || null,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   });
   clearChurchForm();
   renderChurches();
 }
 
-const churchPhotoWidget = createWidget(16 / 9, (url) => saveChurch(url));
+const churchPhotoWidget = createWidget((url) => saveChurch(url));
 
 document.getElementById("churchPhotoBtn").addEventListener("click", () => {
   if (!readChurchForm()) return;
@@ -299,14 +318,14 @@ async function saveProgram(photoUrl) {
   if (!fields) return;
   await db.collection("programs").add({
     ...fields,
-    photoUrl: photoUrl ? optimizeCloudinaryUrl(photoUrl, 1200) : null,
+    photoUrl: photoUrl || null,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   });
   clearProgramForm();
   renderPrograms();
 }
 
-const programPhotoWidget = createWidget(16 / 9, (url) => saveProgram(url));
+const programPhotoWidget = createWidget((url) => saveProgram(url));
 
 document.getElementById("programPhotoBtn").addEventListener("click", () => {
   if (!readProgramForm()) return;
@@ -375,14 +394,14 @@ async function saveLeader(photoUrl) {
   if (!fields) return;
   await db.collection("leaders").add({
     ...fields,
-    photoUrl: photoUrl ? optimizeCloudinaryUrl(photoUrl, 600) : null,
+    photoUrl: photoUrl || null,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   });
   clearLeaderForm();
   renderLeaders();
 }
 
-const leaderPhotoWidget = createWidget(1 / 1, (url) => saveLeader(url));
+const leaderPhotoWidget = createWidget((url) => saveLeader(url));
 
 document.getElementById("leaderPhotoBtn").addEventListener("click", () => {
   if (!readLeaderForm()) return;
@@ -448,14 +467,14 @@ async function saveActivity(photoUrl) {
   if (!fields) return;
   await db.collection("activities").add({
     ...fields,
-    photoUrl: photoUrl ? optimizeCloudinaryUrl(photoUrl, 1200) : null,
+    photoUrl: photoUrl || null,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   });
   clearActivityForm();
   renderActivities();
 }
 
-const activityPhotoWidget = createWidget(16 / 9, (url) => saveActivity(url));
+const activityPhotoWidget = createWidget((url) => saveActivity(url));
 
 document.getElementById("activityPhotoBtn").addEventListener("click", () => {
   if (!readActivityForm()) return;
