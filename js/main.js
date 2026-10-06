@@ -168,15 +168,20 @@ async function loadActivities() {
     snap.forEach((doc) => {
       const a = doc.data();
       const card = document.createElement("article");
-      card.className = "activity-card";
-      card.innerHTML = `
-        <div class="activity-thumb" ${a.photoUrl ? `style="background-image:url('${a.photoUrl}')"` : ""}></div>
-        <div class="activity-body">
-          <span class="activity-date">${a.date || ""}</span>
-          <h3>${a.title || ""}</h3>
-          <p>${a.description || ""}</p>
-        </div>
-      `;
+card.className = "activity-card";
+card.innerHTML = `
+  <div class="activity-thumb">
+    ${
+      p.photoUrl
+        ? `<img src="${p.photoUrl}" alt="${p.title || "Church program"}">`
+        : ""
+    }
+  </div>
+  <div class="activity-body">
+    <h3>${p.title || ""}</h3>
+    <p>${p.description || ""}</p>
+  </div>
+`;
       list.appendChild(card);
     });
   } catch (err) {
@@ -235,30 +240,45 @@ async function loadPrograms() {
 
   try {
     if (typeof db === "undefined") return;
+
     const snap = await db.collection("programs").orderBy("order").get();
 
     if (snap.empty) {
-      list.innerHTML = '<p style="color:var(--ink-400);">No programs posted yet — check back soon.</p>';
+      list.innerHTML =
+        '<p style="color:var(--ink-400);">No programs posted yet — check back soon.</p>';
       return;
     }
 
     list.innerHTML = "";
+
     snap.forEach((doc) => {
       const p = doc.data();
+
       const card = document.createElement("article");
       card.className = "activity-card";
+
       card.innerHTML = `
-        <div class="activity-thumb" ${p.photoUrl ? `style="background-image:url('${p.photoUrl}')"` : ""}></div>
+        <div class="activity-thumb">
+          ${
+            p.photoUrl
+              ? `<img src="${p.photoUrl}" alt="${p.title || "Church program"}">`
+              : ""
+          }
+        </div>
+
         <div class="activity-body">
           <h3>${p.title || ""}</h3>
           <p>${p.description || ""}</p>
         </div>
       `;
+
       list.appendChild(card);
     });
   } catch (err) {
     console.warn("Could not load programs from Firestore.", err);
-    list.innerHTML = '<p style="color:var(--ink-400);">Programs could not be loaded right now.</p>';
+
+    list.innerHTML =
+      '<p style="color:var(--ink-400);">Programs could not be loaded right now.</p>';
   }
 }
 
